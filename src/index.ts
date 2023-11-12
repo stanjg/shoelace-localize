@@ -17,18 +17,22 @@ export interface ExistsOptions {
   includeFallback: boolean;
 }
 
+const __IN_BROWSER__ = typeof navigator === "object";
+
 const connectedElements = new Set<HTMLElement>();
-const documentElementObserver = new MutationObserver(update);
 const translations: Map<string, Translation> = new Map();
 let documentDirection = document.documentElement.dir || 'ltr';
 let documentLanguage = document.documentElement.lang || navigator.language;
 let fallback: Translation;
 
-// Watch for changes on <html lang>
-documentElementObserver.observe(document.documentElement, {
-  attributes: true,
-  attributeFilter: ['dir', 'lang']
-});
+if (__IN_BROWSER__) {
+  // Watch for changes on <html lang>
+  const documentElementObserver = new MutationObserver(update);
+  documentElementObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['dir', 'lang']
+  });
+}
 
 /** Registers one or more translations */
 export function registerTranslation(...translation: Translation[]) {
